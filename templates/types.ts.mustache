@@ -5,7 +5,7 @@ interface Class {
 }
 
 {{# classes }}
-export const {{{ name }}}Wrapper = ccLib['{{{ name }}}Wrapper'] as Class;
+export const {{{ name }}}Wrapper = ccLib['{{{ name }}}'] as Class;
 {{/ classes }}
 
 {{# types }}

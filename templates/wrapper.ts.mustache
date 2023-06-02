@@ -27,14 +27,14 @@ export const SYMBOL_CType_{{{ name }}} = Symbol('CType_{{{ name }}}');
 
 export class {{{ name }}} {
     value: any;
-    [SYMBOL_CType_{{{ name }}}] = true;
+    [SYMBOL_CType_{{{ name }}}]: true = true;
 
     {{# parentTypes }}
-    [SYMBOL_{{{ name }}}] = true;
+    [SYMBOL_{{{ name }}}]: true = true;
     {{/ parentTypes }}
 
-    [C_SYMBOL_MaybeRef] = true;
-    [C_SYMBOL_MaybeConstRef] = true;
+    [C_SYMBOL_MaybeRef]: true = true;
+    [C_SYMBOL_MaybeConstRef]: true = true;
 
     {{# constructors }}
     constructor({{# params }}{{{ name }}}: {{# type }}{{{ tsName }}}{{/ type }}{{^ isLast }}, {{/ isLast }}{{ /params }});
@@ -58,6 +58,7 @@ export class {{{ name }}} {
             {{/ params }}
 
             this.value = new {{{ className }}}Wrapper(...args);
+            return;
         }
         {{/ constructors }}
         throw new Error('Invalid arguments');
@@ -75,9 +76,9 @@ export class {{{ name }}} {
         {{# returnType }}{{^ isRef }}/*{{ /isRef }}{{/ returnType }}
         returnValue = {
             value: returnValue,
-            [SYMBOL_{{# returnType }}{{{ importName }}}{{/ returnType}}]: true,
-            [C_SYMBOL_MaybeRef]: true,
-            [C_SYMBOL_MaybeConstRef]: true,
+            [SYMBOL_{{# returnType }}{{{ importName }}}{{/ returnType}}]: true as true,
+            [C_SYMBOL_MaybeRef]: true as true,
+            [C_SYMBOL_MaybeConstRef]: true as true,
         };
         {{# returnType }}{{^ isRef }}*/{{ /isRef }}{{/ returnType }}
         return returnValue;

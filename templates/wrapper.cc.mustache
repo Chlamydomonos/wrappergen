@@ -1,0 +1,70 @@
+#include "{{{ name }}}Wrapper.hh"
+
+Napi::FunctionReference {{{ name }}}Wrapper::constructor;
+
+Napi::Object {{{ name }}}Wrapper::init(Napi::Env env, Napi::Object exports)
+{
+    Napi::Function func = DefineClass(env, "{{{ name }}}", {
+        InstanceMethod("getValue", &{{{ name }}}Wrapper::getValue),
+        {{# methods }}
+        InstanceMethod("Wrapped_{{{ name }}}", &{{{ className }}}Wrapper::Wrapped_{{{ name }}}),
+        {{/ methods }}
+    });
+
+    constructor = Napi::Persistent(func);
+    constructor.SuppressDestruct();
+
+    exports.Set("{{{ name }}}", func);
+    return exports;
+}
+
+{{{ name }}}Wrapper::{{{ name }}}Wrapper(const Napi::CallbackInfo& info) : Napi::ObjectWrap<{{{ name }}}Wrapper>(info)
+{
+    Napi::Env env = info.Env();
+
+    auto constructorId = info[0].As<Napi::Number>().Int32Value();
+
+    {{# constructors }}
+    {{^ isFirst}}else {{/isFirst}}if (constructorId == {{{ id }}})
+    {
+        init_{{{ id }}}(info);
+    }
+    {{/ constructors }}
+
+}
+
+{{# constructors }}
+void {{{ name }}}Wrapper::init_{{{ id }}}(const Napi::CallbackInfo& info)
+{
+    Napi::Value rawArg;
+    {{# params }}
+    rawArg = info[{{{ id }}}];
+    auto {{# type }}{{# isRef }}&{{/ isRef }}{{ /type }}arg_{{{ id }}} = {{# type }}{{# parseArg }}rawArg{{/ parseArg }}{{/ type }};
+    {{/ params }}
+    value = std::make_unique<{{{ className }}}>({{# params }}arg_{{{ id }}}{{^ isLast }}, {{/ isLast}}{{/ params }});
+}
+{{/ constructors }}
+
+{{# methods }}
+Napi::Value {{{ className }}}Wrapper::Wrapped_{{{ name }}}(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Napi::Value rawArg;
+    {{# params }}
+    rawArg = info[{{{ id }}}];
+    auto {{# type }}{{# isRef }}&{{/ isRef }}{{ /type }}arg_{{{ id }}} = {{# type }}{{# parseArg }}rawArg{{/ parseArg }}{{/ type }};
+    {{/ params }}
+    {{^ isVoid }}
+    auto returnValue = value->{{{ name }}}({{# params }}arg_{{{ id }}}{{^ isLast }}, {{/ isLast}}{{/ params }});
+    return {{# returnType }}{{# napiNew }}returnValue{{/ napiNew }}{{/ returnType }};
+    {{/ isVoid }}
+    {{# isVoid }}
+    value->{{{ name }}}({{# params }}arg_{{{ id }}}{{^ isLast }}, {{/ isLast}}{{/ params }});
+    return env.Null();
+    {{/ isVoid }}
+}
+{{/ methods }}
+
+{{# methods }}
+{{/ methods }}

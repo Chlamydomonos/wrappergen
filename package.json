@@ -1,0 +1,33 @@
+{
+  "name": "@nocturne/wrappergen",
+  "version": "1.0.0",
+  "description": "Wrappergen工具",
+  "main": "dist/index.js",
+  "scripts": {
+    "configure": "cmake-js configure",
+    "build": "cmake-js build && tsc --build",
+    "debugbuild": "cmake-js build --debug && tsc --build",
+    "buildjs": "tsc --build",
+    "clean": "cmake-js clean"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^10.0.1",
+    "hjson": "^3.2.2",
+    "mustache": "^4.2.0",
+    "node-addon-api": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/hjson": "^2.4.3",
+    "@types/mustache": "^4.2.2",
+    "@types/node": "^20.2.5",
+    "cmake-js": "^7.2.1",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
+  },
+  "bin": {
+    "wrappergen": "./dist/exe/main.js",
+    "wrappergen-test": "./dist/exe/test.js"
+  }
+}

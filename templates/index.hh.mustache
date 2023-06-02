@@ -1,0 +1,13 @@
+{{# classes }}
+#include "{{{ name }}}Wrapper.hh"
+{{/ classes }}
+
+#include <napi.h>
+
+Napi::Object initAll(Napi::Env env, Napi::Object exports)
+{
+{{# classes }}
+    {{{ name }}}Wrapper::init(env, exports);
+{{/ classes }}
+    return exports;
+}

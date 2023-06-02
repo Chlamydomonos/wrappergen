@@ -1,0 +1,28 @@
+#pragma once
+
+#include "{{{ header }}}"
+
+#include "nocturne_types.hh"
+
+#include <napi.h>
+#include <memory>
+
+class {{{ name }}}Wrapper : public Napi::ObjectWrap<{{{ name }}}Wrapper>
+{
+public:
+    static Napi::Object init(Napi::Env env, Napi::Object exports);
+    {{{ name }}}Wrapper(const Napi::CallbackInfo& info);
+
+private:
+    static Napi::FunctionReference constructor;
+    std::unique_ptr<{{{ name }}}> value;
+    Napi::Value getValue(const Napi::CallbackInfo& info) { return Napi::External<{{{ name }}}>::New(info.Env(), value.get()); }
+
+    {{# constructors }}
+    void init_{{{ id }}}(const Napi::CallbackInfo& info);
+    {{/ constructors }}
+
+    {{# methods }}
+    Napi::Value Wrapped_{{{ name }}}(const Napi::CallbackInfo& info);
+    {{/ methods }}
+};

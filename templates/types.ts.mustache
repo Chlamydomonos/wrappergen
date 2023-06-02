@@ -1,0 +1,57 @@
+{{{ tsImportSentence }}}
+
+interface Class {
+    new (...args: any[]): any;
+}
+
+{{# classes }}
+export const {{{ name }}}Wrapper = ccLib['{{{ name }}}Wrapper'] as Class;
+{{/ classes }}
+
+{{# types }}
+export const SYMBOL_{{{ importName }}} = Symbol('{{{ importName }}}');
+{{/ types }}
+
+export const C_SYMBOL_MaybeRef = Symbol('MaybeRef');
+export const C_SYMBOL_MaybeConstRef = Symbol('MaybeConstRef');
+
+interface MaybeRef {
+    [C_SYMBOL_MaybeRef]: true;
+}
+
+interface IsRef {
+    [C_SYMBOL_MaybeRef]: true;
+    [C_SYMBOL_MaybeConstRef]: true;
+}
+
+interface IsConstRef {
+    [C_SYMBOL_MaybeConstRef]: true;
+}
+
+export type Ref<T> = T extends MaybeRef ? T : { value: T } & IsRef;
+export type ConstRef<T> = T extends MaybeRef ? Omit<T, typeof C_SYMBOL_MaybeRef> : { value: T } & IsConstRef;
+
+{{# types }}
+export interface {{{ importName }}} extends IsRef {
+    value: External;
+    [SYMBOL_{{{ importName }}}]: true;
+}
+{{/ types }}
+
+export function isNumber(value: any): value is number {
+    return typeof value === 'number';
+}
+
+export function isString(value: any): value is string {
+    return typeof value === 'string';
+}
+
+export function isBoolean(value: any): value is boolean {
+    return typeof value === 'boolean';
+}
+
+{{# types }}
+export function is{{{ importName }}}(value: any): value is {{{ importName }}} {
+    return value && value[SYMBOL_{{{ importName }}}];
+}
+{{/ types }}

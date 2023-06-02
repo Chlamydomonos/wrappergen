@@ -1,0 +1,96 @@
+import {
+    {{# importedTypes }}
+    SYMBOL_{{{ name }}},
+    is{{{ name }}},
+    {{/ importedTypes}}
+    C_SYMBOL_MaybeRef,
+    C_SYMBOL_MaybeConstRef,
+    isNumber,
+    isString,
+    isBoolean,
+    {{{ name }}}Wrapper
+} from './types';
+
+import type {
+{{# importedTypes }}
+{{{ name }}},
+{{/ importedTypes }}
+Ref,
+ConstRef
+} from './types';
+
+{{# importedClasses }}
+import { type CType_{{{ name }}}, isCType_{{{ name }}}, SYMBOL_CType_{{{ name }}} } from './{{{ name }}}';
+{{/ importedClasses }}
+
+export const SYMBOL_CType_{{{ name }}} = Symbol('CType_{{{ name }}}');
+
+export class {{{ name }}} {
+    value: any;
+    [SYMBOL_CType_{{{ name }}}] = true;
+
+    {{# parentTypes }}
+    [SYMBOL_{{{ name }}}] = true;
+    {{/ parentTypes }}
+
+    [C_SYMBOL_MaybeRef] = true;
+    [C_SYMBOL_MaybeConstRef] = true;
+
+    {{# constructors }}
+    constructor({{# params }}{{{ name }}}: {{# type }}{{{ tsName }}}{{/ type }}{{^ isLast }}, {{/ isLast }}{{ /params }});
+    {{/ constructors }}
+
+    constructor(...args: any[]) {
+        args = [0, ...args];
+        {{# constructors }}
+        if (
+            args.length === {{{ paramCount }}}
+            {{# params }}
+            && is{{# type }}{{{ importName }}}{{/ type }}(args[{{{ id }}}])
+            {{/ params }}
+        ) {
+            args[0] = {{{ id }}};
+
+            {{# params }}
+            {{# type }}{{^ isRef }}/*{{ /isRef }}{{/ type }}
+            args[{{{ id }}}] = args[{{{ id }}}].value;
+            {{# type }}{{^ isRef }}*/{{ /isRef }}{{/ type }}
+            {{/ params }}
+
+            this.value = new {{{ className }}}Wrapper(...args);
+        }
+        {{/ constructors }}
+        throw new Error('Invalid arguments');
+    }
+
+    {{# methods }}
+    {{{ name }}}({{# params }}{{{ name }}}: {{# type }}{{{ tsName }}}{{/ type }}{{^ isLast }}, {{/ isLast }}{{/ params }}): {{# returnType }}{{{ tsName }}}{{/ returnType }} {
+        {{# params }}
+        {{# type }}{{^ isRef }}/*{{ /isRef }}{{/ type }}
+        {{{ name }}} = {{{ name }}}.value;
+        {{# type }}{{^ isRef }}*/{{ /isRef }}{{/ type }}
+        {{/ params }}
+        let returnValue: any = this.value.Wrapped_{{{ name }}}({{# params }}{{{ name }}}{{^ isLast }}, {{/ isLast }}{{/ params }});
+
+        {{# returnType }}{{^ isRef }}/*{{ /isRef }}{{/ returnType }}
+        returnValue = {
+            value: returnValue,
+            [SYMBOL_{{# returnType }}{{{ importName }}}{{/ returnType}}]: true,
+            [C_SYMBOL_MaybeRef]: true,
+            [C_SYMBOL_MaybeConstRef]: true,
+        };
+        {{# returnType }}{{^ isRef }}*/{{ /isRef }}{{/ returnType }}
+        return returnValue;
+    }
+    {{/ methods }}
+}
+
+export function isCType_{{{ name }}}(value: any): value is {{{ name }}} {
+    return value && value[SYMBOL_CType_{{{ name }}}];
+}
+
+type FunctionKeysOf<T> = {
+    [K in keyof T]: T[K] extends Function ? K : never;
+}[keyof T];
+
+export type CType_{{{ name }}} = Omit<{{{ name }}}, FunctionKeysOf<{{{ name }}}>>;

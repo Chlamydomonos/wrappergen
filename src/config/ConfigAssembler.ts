@@ -201,7 +201,7 @@ export class ConfigAssembler {
         } else if (type.type == ValueType.REF) {
             return () => (text, _render) => `Napi::External<${type.ref}>::New(env, &${text})`;
         } else if (type.type == ValueType.CREF) {
-            return () => (text, _render) => `Napi::External<${type.ref}>::New(env, &${text})`;
+            return () => (text, _render) => `Napi::External<const ${type.ref}>::New(env, &${text})`;
         } else {
             throw new Error(`Unknown type: ${type} (this is impossible)`);
         }

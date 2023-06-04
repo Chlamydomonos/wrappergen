@@ -56,7 +56,7 @@ Napi::Value {{{ className }}}Wrapper::Wrapped_{{{ name }}}(const Napi::CallbackI
     auto {{# type }}{{# isRef }}&{{/ isRef }}{{ /type }}arg_{{{ id }}} = {{# type }}{{# parseArg }}rawArg{{/ parseArg }}{{/ type }};
     {{/ params }}
     {{^ isVoid }}
-    auto returnValue = value->{{{ name }}}({{# params }}arg_{{{ id }}}{{^ isLast }}, {{/ isLast}}{{/ params }});
+    auto {{# returnType }}{{# isRef }}&{{/ isRef }}{{/ returnType }}returnValue = value->{{{ name }}}({{# params }}arg_{{{ id }}}{{^ isLast }}, {{/ isLast}}{{/ params }});
     return {{# returnType }}{{# napiNew }}returnValue{{/ napiNew }}{{/ returnType }};
     {{/ isVoid }}
     {{# isVoid }}

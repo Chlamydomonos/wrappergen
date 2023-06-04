@@ -14,15 +14,14 @@ export enum ValueType {
     STRING,
     VOID,
     REF,
-    CREF,
 }
 
 interface SimpleParsedType {
-    type: Exclude<ValueType, ValueType.REF | ValueType.CREF>;
+    type: Exclude<ValueType, ValueType.REF>;
 }
 
 interface RefParsedType {
-    type: ValueType.REF | ValueType.CREF;
+    type: ValueType.REF;
     ref: string;
 }
 

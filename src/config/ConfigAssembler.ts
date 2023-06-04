@@ -52,7 +52,7 @@ export class ConfigAssembler {
     tsImportSentence = '';
 
     private getIsRef(type: ParsedType) {
-        return type.type == ValueType.REF || type.type == ValueType.CREF;
+        return type.type == ValueType.REF;
     }
 
     private getCCName(type: ParsedType) {
@@ -86,8 +86,6 @@ export class ConfigAssembler {
             return 'void';
         } else if (type.type == ValueType.REF) {
             return `Ref<${type.ref}>`;
-        } else if (type.type == ValueType.CREF) {
-            return `ConstRef<${type.ref}>`;
         } else {
             throw new Error(`Unknown type: ${type} (this is impossible)`);
         }
@@ -124,8 +122,6 @@ export class ConfigAssembler {
             return 'void';
         } else if (type.type == ValueType.REF) {
             return `Ref<CType_${type.ref}>`;
-        } else if (type.type == ValueType.CREF) {
-            return `ConstRef<CType_${type.ref}>`;
         } else {
             throw new Error(`Unknown type: ${type} (this is impossible)`);
         }
@@ -161,8 +157,6 @@ export class ConfigAssembler {
         } else if (type.type == ValueType.VOID) {
             return '';
         } else if (type.type == ValueType.REF) {
-            return `CType_${type.ref}`;
-        } else if (type.type == ValueType.CREF) {
             return `CType_${type.ref}`;
         } else {
             throw new Error(`Unknown type: ${type} (this is impossible)`);
@@ -200,8 +194,6 @@ export class ConfigAssembler {
             return () => (text, _render) => `Napi::Value()`;
         } else if (type.type == ValueType.REF) {
             return () => (text, _render) => `Napi::External<${type.ref}>::New(env, &${text})`;
-        } else if (type.type == ValueType.CREF) {
-            return () => (text, _render) => `Napi::External<const ${type.ref}>::New(env, &${text})`;
         } else {
             throw new Error(`Unknown type: ${type} (this is impossible)`);
         }
@@ -239,9 +231,6 @@ export class ConfigAssembler {
         } else if (type.type == ValueType.REF) {
             return () => (text, _render) =>
                 `*(${text}.IsExternal() ? ${text}.As<Napi::External<${type.ref}>>().Data() : ${text}.As<Napi::Object>().Get("getValue").As<Napi::Function>().Call(${text}, {}).As<Napi::External<${type.ref}>>().Data())`;
-        } else if (type.type == ValueType.CREF) {
-            return () => (text, _render) =>
-                `*(${text}.IsExternal() ? ${text}.As<Napi::External<${type.ref}>>().Data() : ${text}.As<Napi::Object>().Get("getValue").As<Napi::Function>().Call(${text}, {}).As<Napi::External<${type.ref}>>().Data())`;
         } else {
             throw new Error(`Unknown type: ${type} (this is impossible)`);
         }
@@ -271,7 +260,7 @@ export class ConfigAssembler {
                         napiNew: this.getNAPINew(type),
                         parseArg: this.getParseArg(type),
                     };
-                    if (type.type == ValueType.REF || type.type == ValueType.CREF) {
+                    if (type.type == ValueType.REF) {
                         typeMap.set(type.ref, typeConfig);
                         importedTypeMap.set(type.ref, typeConfig);
                     }
@@ -321,7 +310,7 @@ export class ConfigAssembler {
                         napiNew: this.getNAPINew(type),
                         parseArg: this.getParseArg(type),
                     };
-                    if (type.type == ValueType.REF || type.type == ValueType.CREF) {
+                    if (type.type == ValueType.REF) {
                         typeMap.set(type.ref, typeConfig);
                         importedTypeMap.set(type.ref, typeConfig);
                     }
@@ -341,7 +330,7 @@ export class ConfigAssembler {
                     napiNew: this.getNAPINew(returnType),
                     parseArg: this.getParseArg(returnType),
                 };
-                if (returnType.type == ValueType.REF || returnType.type == ValueType.CREF) {
+                if (returnType.type == ValueType.REF) {
                     typeMap.set(returnType.ref, returnTypeConfig);
                     importedTypeMap.set(returnType.ref, returnTypeConfig);
                 }

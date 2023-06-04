@@ -84,18 +84,7 @@ export class Parser {
         } else {
             const isRef = /^\s*Ref\s*<\s*(.*)\s*>\s*$/.exec(typeName);
             if (!isRef) {
-                const isCRef = /^\s*ConstRef\s*<\s*(.*)\s*>\s*$/.exec(typeName);
-                if (!isCRef) {
-                    throw new Error(`Unknown type name: ${typeName}`);
-                }
-
-                let name = isCRef[1];
-                const isComplexName = /^\s*.*\s+(\S+)\s*$/.exec(name);
-                if (isComplexName) {
-                    name = isComplexName[1];
-                }
-
-                return { type: ValueType.CREF, ref: name, hasDefault };
+                throw new Error(`Unknown type name: ${typeName}`);
             }
 
             let name = isRef[1];

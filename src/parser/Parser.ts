@@ -73,7 +73,7 @@ export class Parser {
             return { type: ValueType.F32, hasDefault };
         } else if (/^\s*f64\s*$/.test(typeName)) {
             return { type: ValueType.F64, hasDefault };
-        } else if (/^\s*bool\s*$/.test(typeName)) {
+        } else if (/^\s*boolean\s*$/.test(typeName)) {
             return { type: ValueType.BOOL, hasDefault };
         } else if (/^\s*CString\s*$/.test(typeName)) {
             return { type: ValueType.CSTRING, hasDefault };
